@@ -6,6 +6,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -53,6 +54,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var uniqueTo: String? = null
     var quote: String = ""
     var replacementTextForUniques = ""
+
+    /** Custom */
+    var isPlayerOnly = false // Jiin : Add player only property
 
     lateinit var ruleset: Ruleset
 
@@ -259,6 +263,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
+
+        if (isPlayerOnly && civ.playerType == PlayerType.AI)    // Jiin : Add player only property
+            yield(RejectionReasonType.Unbuildable.toInstance())
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
