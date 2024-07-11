@@ -93,6 +93,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
     var attacksSinceTurnStart = ArrayList<Vector2>()
 
+    var kill = 0
     //endregion
     //region Transient fields
 
@@ -197,6 +198,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.movementMemories = movementMemories.copy()
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
+        toReturn.kill = kill
         return toReturn
     }
 

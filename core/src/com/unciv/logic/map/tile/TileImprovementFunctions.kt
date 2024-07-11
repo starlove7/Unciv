@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -44,6 +45,8 @@ class TileImprovementFunctions(val tile: Tile) {
     fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = sequence {
         val stateForConditionals = StateForConditionals(civInfo, tile = tile)
 
+        if (improvement.isPlayerOnly && civInfo.playerType == PlayerType.AI)    // Jiin : Add player only property
+            yield(ImprovementBuildingProblem.Unbuildable)
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
             yield(ImprovementBuildingProblem.WrongCiv)
         if (civInfo.cache.uniqueImprovements.any { it.replaces == improvement.name })

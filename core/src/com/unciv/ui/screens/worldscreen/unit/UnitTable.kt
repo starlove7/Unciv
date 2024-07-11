@@ -207,6 +207,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
 
+                if (!unit.isCivilian()) {    // Jiin : 킬 수 표시
+                    unitDescriptionTable.add("K")
+                    unitDescriptionTable.add(unit.kill.toString()).padRight(10f)
+                }
+
                 if (unit.baseUnit.religiousStrength > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
                     unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())

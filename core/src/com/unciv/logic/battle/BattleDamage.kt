@@ -81,6 +81,11 @@ object BattleDamage {
             modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
         }
 
+        // Jiin : 킬 수 * 전투력 증가
+        for (unique in combatant.getMatchingUniques(UniqueType.StrengthAfterKill, conditionalState, true)) {
+            modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt() * combatant.unit.kill)
+        }
+
         // e.g., Mehal Sefari https://civilization.fandom.com/wiki/Mehal_Sefari_(Civ5)
         for (unique in combatant.getMatchingUniques(
             UniqueType.StrengthNearCapital, conditionalState, true

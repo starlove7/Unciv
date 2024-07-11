@@ -190,14 +190,20 @@ object Battle {
             tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker)
 
-            if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender)
+            if (attacker is MapUnitCombatant) {
+                triggerVictoryUniques(attacker, defender)
+                attacker.unit.kill++
+            }
             triggerDefeatUniques(defender, attacker, attackedTile)
 
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
 
-            if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker)
+            if (defender is MapUnitCombatant) {
+                triggerVictoryUniques(defender, attacker)
+                defender.unit.kill++
+            }
             triggerDefeatUniques(attacker, defender, attackedTile)
         }
 
