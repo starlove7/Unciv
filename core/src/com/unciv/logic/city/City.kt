@@ -90,7 +90,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     var cityAIFocus: String = CityFocus.NoFocus.name
-    fun getCityFocus() = CityFocus.values().firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
+    fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
 
@@ -194,7 +194,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
+    fun getResourcesGeneratedByCity(civResourceModifiers: HashMap<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     fun isGrowing() = foodForNextTurn() > 0
@@ -237,6 +237,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
+
+    // This should probably be configurable
+    @Transient
+    private val maxAirUnits = 6
+    /** Gets max air units that can remain in the city untransported */
+    fun getMaxAirUnits() = maxAirUnits
 
     override fun toString() = name // for debug
 
@@ -414,7 +420,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits -> tile.airUnits.count { !it.isTransported } < 6
+            construction.movesLikeAirUnits -> return true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }
