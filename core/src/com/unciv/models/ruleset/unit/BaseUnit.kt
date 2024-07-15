@@ -253,6 +253,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (!canUnitEnterTile)
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
+
+        if (civ.modConstants.maxCivilizationWorker > 0) {
+            var numWorker = civ.units.getCivUnits().filter { mapUnit -> mapUnit.name == "Worker" }.count()
+            if (numWorker >= civ.modConstants.maxCivilizationWorker)
+                yield(RejectionReasonType.MaxNumberBuildable.toInstance())
+        }
     }
 
     /**

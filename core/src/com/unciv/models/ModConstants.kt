@@ -95,6 +95,7 @@ class ModConstants {
     var minimumWarDuration = 10
     var baseTurnsUntilRevolt = 4
     var cityStateElectionTurns = 15
+    var maxCivilizationWorker = 0
 
     // Espionage
     var maxSpyRank = 3
