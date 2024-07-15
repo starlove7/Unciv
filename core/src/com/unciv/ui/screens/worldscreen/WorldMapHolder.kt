@@ -27,6 +27,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
@@ -282,10 +283,11 @@ class WorldMapHolder(
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
             val tileToMoveTo: Tile
-            val pathToTile: List<Tile>
+            var pathToTile: List<Tile>? = null
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(targetTile)
+                if (!selectedUnit.type.isAirUnit())
+                    pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {
                     is UnitMovement.UnreachableDestinationException -> {
@@ -320,7 +322,12 @@ class WorldMapHolder(
 
                     worldScreen.shouldUpdate = true
 
-                    animateMovement(previousTile, selectedUnit, targetTile, pathToTile)
+                    if (pathToTile != null) {
+                        animateMovement(previousTile, selectedUnit, tileToMoveTo, pathToTile)
+                        if (selectedUnit.isEscorting()) {
+                            animateMovement(previousTile, selectedUnit.getOtherEscortUnit()!!, tileToMoveTo, pathToTile)
+                        }
+                    }
 
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
@@ -563,7 +570,7 @@ class WorldMapHolder(
             .surroundWithCircle(buttonSize, false, Color.BLACK)
 
         if (!isParadrop) {
-            val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
+            val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.tr().toLabel(fontSize = 14)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
                 .surroundWithCircle(smallerCircleSizes, false)
@@ -572,7 +579,7 @@ class WorldMapHolder(
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
-        else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
+        else dto.unitToTurnsToDestination.size.tr().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
                 .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ.nation.getOuterColor() }
         unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
