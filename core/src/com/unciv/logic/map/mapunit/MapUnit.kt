@@ -652,6 +652,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         newUnit.promotions = promotions.clone()
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
+        newUnit.kill = kill
 
         newUnit.updateUniques()
         newUnit.updateVisibleTiles()
