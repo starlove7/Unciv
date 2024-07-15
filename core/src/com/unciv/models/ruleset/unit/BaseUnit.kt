@@ -24,6 +24,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.yieldIfNotNull
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.utils.Log
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -254,8 +255,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
 
-        if (civ.modConstants.maxCivilizationWorker > 0) {
-            var numWorker = civ.units.getCivUnits().filter { mapUnit -> mapUnit.name == "Worker" }.count()
+        if (this@BaseUnit.name == "Worker" && civ.modConstants.maxCivilizationWorker > 0) {
+            var numWorker = civ.units.getCivUnits().filter { mapUnit -> mapUnit.name == this@BaseUnit.name }.count()
+            Log.debug("civilization worker number is $numWorker")
             if (numWorker >= civ.modConstants.maxCivilizationWorker)
                 yield(RejectionReasonType.MaxNumberBuildable.toInstance())
         }
